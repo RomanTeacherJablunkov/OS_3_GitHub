@@ -16,5 +16,5 @@ class Bike(Vehicle): #Třída pro motorku jako typu vozidla
 car = Car(180) #Nastavená rychlost auta
 bike = Bike(60) #Nastavená rychlost motorky
 
-print(car.max_speed()) #Vytisknutí textu pro auto
+print(car.max_speed()) #Vytisknutí textu pro aut
 print(bike.max_speed()) #Vytisknutí textu pro motorku
