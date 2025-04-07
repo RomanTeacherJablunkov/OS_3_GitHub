@@ -1,2 +1,4 @@
 #Uprava od Krabica
 #Uprava od Kufa
+#Uprava od Szkandera
+#Uprava od Walkarz
