@@ -1,66 +1,54 @@
-import tkinter as tk
-from tkinter import scrolledtext
+class Uver:
+    def __init__(self, castka, urokova_sazba, doba_splaceni_mesice):
+        self.castka = castka
+        self.urokova_sazba = urokova_sazba / 100 / 12
+        self.doba_splaceni_mesice = doba_splaceni_mesice
 
-class ChatApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Chatovací aplikace")
-        
-        self.responses = {
-            "ahoj": "Ahoj! Jak se máš?",
-            "jak se maš": "Nevím jak ty!",
-            "co je Python?": "Python je programovací jazyk.",
-            "kolikrat sis dnes prdnul":"16"
+    def mesicni_splatka(self):
+        citatel = self.castka * self.urokova_sazba * (1 + self.urokova_sazba) ** self.doba_splaceni_mesice
+        jmenovatel = (1 + self.urokova_sazba) ** self.doba_splaceni_mesice - 1
+        return citatel / jmenovatel
 
-    
-        }
-        
-        self.chat_window = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=50, height=20)
-        self.chat_window.grid(row=0, column=0, padx=10, pady=10)
-        self.chat_window.configure(state='disabled')
-        
-        self.message_entry = tk.Entry(root, width=50)
-        self.message_entry.grid(row=1, column=0, padx=10, pady=10)
-        self.message_entry.bind("<Return>", self.send_message)
-        
-        self.send_button = tk.Button(root, text="Odeslat", command=self.send_message)
-        self.send_button.grid(row=2, column=0, padx=10, pady=10)
-    
-    def send_message(self, event=None):
-        message = self.message_entry.get()
-        if message.strip():
-            self.chat_window.configure(state='normal')
-            self.chat_window.insert(tk.END, f"Ty: {message}\n")
-            self.chat_window.configure(state='disabled')
-            self.message_entry.delete(0, tk.END)
-            self.respond(message)
-    
-    def respond(self, message):
-        if message in self.responses:
-            response = self.responses[message]
-        else:
-            response = "Nemám odpověď, co mam dat na to "
-            self.chat_window.configure(state='normal')
-            self.chat_window.insert(tk.END, f"Albert: {response}\n")
-            self.chat_window.configure(state='disabled')
-            
-            def learn_response(event=None):
-                user_response = self.message_entry.get()
-                if user_response.strip():
-                    self.responses[message] = user_response
-                    self.chat_window.configure(state='normal')
-                    self.chat_window.insert(tk.END, f"Albert: diky za odpověd '{message}'!\n")
-                    self.chat_window.configure(state='disabled')
-                    self.message_entry.unbind("<Return>")  
-                    self.message_entry.delete(0, tk.END)
+    def celkova_zaplacena_castka(self):
+        return self.mesicni_splatka() * self.doba_splaceni_mesice
 
-            self.message_entry.bind("<Return>", learn_response)
-        self.chat_window.configure(state='normal')
-        self.chat_window.insert(tk.END, f"Albert: {response}\n")
-        self.chat_window.configure(state='disabled')
+    def celkove_uroky(self):
+        return self.celkova_zaplacena_castka() - self.castka
+
+    def splatkovy_kalendar(self):
+        zustatek = self.castka
+        mesicni_splatka = self.mesicni_splatka()
+        print("\nSplátkový kalendář:")
+        for mesic in range(1, self.doba_splaceni_mesice + 1):
+            splatka_urok = zustatek * self.urokova_sazba
+            splatka_jistina = mesicni_splatka - splatka_urok
+            zustatek -= splatka_jistina
+            print(f"Měsíc {mesic}: Jistina: {splatka_jistina:.2f} Kč, Úrok: {splatka_urok:.2f} Kč, Zůstatek: {zustatek:.2f} Kč")
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ChatApp(root)
-    root.mainloop()
+class KalkulackaUveru:
+    def __init__(self):
+        self.uver = None
+
+    def vstupy_uzivatele(self):
+        castka = float(input("Zadejte výši úvěru (v Kč): "))
+        urokova_sazba = float(input("Zadejte roční úrokovou sazbu (v %): "))
+        doba = input("Zadejte dobu splácení (měsíce nebo roky): ")
+        doba_splaceni_mesice = int(float(doba.split()[0]) * 12) if "rok" in doba.lower() else int(doba.split()[0])
+        self.uver = Uver(castka, urokova_sazba, doba_splaceni_mesice)
+
+    def zobraz_vysledky(self):
+        mesicni_splatka = self.uver.mesicni_splatka()
+        celkova_castka = self.uver.celkova_zaplacena_castka()
+        celkove_uroky = self.uver.celkove_uroky()
+        print("\nVýsledky:")
+        print(f"• Měsíční splátka: {mesicni_splatka:.2f} Kč")
+        print(f"• Celkově zaplacená částka: {celkova_castka:.2f} Kč")
+        print(f"• Celkově zaplacené úroky: {celkove_uroky:.2f} Kč")
+        if input("\nChcete zobrazit splátkový kalendář? (ano/ne): ").lower() == "ano":
+            self.uver.splatkovy_kalendar()
+
+
+kalkulacka = KalkulackaUveru()
+kalkulacka.vstupy_uzivatele()
+kalkulacka.zobraz_vysledky()
