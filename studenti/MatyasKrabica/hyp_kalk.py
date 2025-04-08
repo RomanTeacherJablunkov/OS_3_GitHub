@@ -56,4 +56,51 @@ class KalkulatorUveru:
         print(f"Celkove zaplacena castka: {self.uver.celkove_zaplaceno():.2f} Kc")
         print(f"Celkove zaplacene uroky: {self.uver.celkove_uroky():.2f} Kc")
 
+class AmortizacniPlan:
+    def __init__(self, uver):
+        self.uver = uver
 
+    def vygenerovat_plan(self):
+        # Vytvoreni tabulky splatek
+        r = self.uver.rocni_urokova_sazba / 100 / 12
+        n = self.uver.mesice
+        mesicni_splatka = self.uver.mesicni_splatka()
+
+        zustatek = self.uver.urok
+        plan = []
+
+        for mesic in range(1, n + 1):
+            urokova_splatka = zustatek * r
+            jistinova_splatka = mesicni_splatka - urokova_splatka
+            zustatek -= jistinova_splatka
+
+            # Zaokrouhleni vysledku na dve desetinna mista
+            plan.append({
+                'Mesic': mesic,
+                'Splatka': round(mesicni_splatka, 2),
+                'Urok': round(urokova_splatka, 2),
+                'Jistina': round(jistinova_splatka, 2),
+                'Zustatek': round(zustatek, 2)
+            })
+
+        return plan
+
+    def vytisknout_plan(self):
+        plan = self.vygenerovat_plan()
+        print("\nSplatkovy kalendar:")
+        print(f"{'Mesic':<8}{'Splatka':<12}{'Urok':<10}{'Jistina':<12}{'Zustatek'}")
+        for radek in plan:
+            print(f"{radek['Mesic']:<8}{radek['Splatka']:<12}{radek['Urok']:<10}{radek['Jistina']:<12}{radek['Zustatek']}")
+
+
+# Hlavni program
+if __name__ == "__main__":
+    kalkulator = KalkulatorUveru()
+    kalkulator.zadat_udaje()
+    kalkulator.zobrazit_vysledky()
+
+    # Moznost zobrazeni splatkového kalendáře
+    zobrazit_plan = input("\nChcete zobrazit splatkovy kalendar? (ano/ne): ").strip().lower()
+    if zobrazit_plan == 'ano':
+        amortizacni_plan = AmortizacniPlan(kalkulator.uver)
+        amortizacni_plan.vytisknout_plan()
