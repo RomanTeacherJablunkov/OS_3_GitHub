@@ -1,0 +1,2 @@
+# Shrnutí kde by jsme mohli tyto přiklady využit
+# Zadání: Vytvořte vlastní třídu s použitím @staticmethod a použiti @classmethod, která simuluje jednoduchý skladový systém. Přesně zadání je přiloženo v dalším souburu.

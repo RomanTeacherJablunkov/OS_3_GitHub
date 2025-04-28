@@ -25,3 +25,11 @@ my_cat = Cat("Whiskers")
 
 print(my_dog.make_sound())
 print(my_cat.make_sound())  
+
+
+class Logger(object): #Single ton třída
+    def __new__(cls, *args, **kwargs): #Metoda new, která zajistí že vždy bude existovat jen jedna instance teto třídy
+        if not hasattr(cls, "_logger"):
+            cls._logger = super(Logger, cls).__new__(cls, *args, **kwargs)
+        return cls._logger
+        
